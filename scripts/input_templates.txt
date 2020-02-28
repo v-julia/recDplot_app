@@ -1,0 +1,111 @@
+INPUT ROWS
+
+
+
+   fluidRow(
+     column(2,
+            fileInput(
+              "file_alignment", "Upload alignment in fasta-format", accept = c(".fasta")
+            ),
+            numericInput(
+              "window", 
+              "Size of sliding window", 
+              min = 50, max = 10000, value = 200
+            ),
+            numericInput(
+              "step", 
+              "Size of step", 
+              min = 10, max = 10000, value = 50
+            ),
+            actionButton("goButton", "Run")
+     ),
+     column(8,
+            p("Short description of this app"),
+            textOutput("selected_var"),
+            plotOutput("rmse_matrix_plot", click = "plot_click"),
+            plotOutput("control"),
+            verbatimTextOutput("info")
+    )
+   ),
+   
+   
+   fluidRow(
+     column(2,
+            numericInput(
+              "start1", "Start",
+              value=1
+            )
+     ),
+     column(2,
+            numericInput(
+              "end1", "End",
+              value=100
+            )
+     )
+   ),
+   
+   fluidRow(
+     column(2,
+            numericInput(
+              "start2", 
+              "Start",
+              value=101
+            )
+     ),
+     column(2,
+            numericInput(
+              "end2", 
+              "End",
+              value=200
+            )
+     )
+   ),
+   
+   fluidRow(
+             
+            actionButton("goButton2", "Run")
+     ),
+     
+   
+   fluidRow(
+     plotOutput("dist_plot")
+     
+   )
+     
+   )
+   
+   
+   
+---------------------------------------------------
+SIDE BAR ONE PAGE
+
+sidebarLayout(
+  sidebarPanel(
+    fileInput(
+      "file_alignment", "Upload alignment in fasta-format", accept = c(".fasta")
+    ),
+    numericInput(
+      "window", 
+      "Size of sliding window", 
+      min = 50, max = 10000, value = 200
+    ),
+    numericInput(
+      "step", 
+      "Size of step", 
+      min = 10, max = 10000, value = 50
+    ),
+    actionButton("goButton", "Run")
+
+    
+  ),
+  
+  
+  mainPanel(
+    p("Short description of this app"),
+    textOutput("selected_var"),
+    plotOutput("rmse_matrix_plot", click = "plot_click"),
+    verbatimTextOutput("info")
+    
+    
+    )
+      
