@@ -74,7 +74,7 @@ plot_dist_test = function(dna_object, st1,e1,st2,e2){
     xlab(paste(toString(st1),toString(e1),sep=":"))+ylab(paste(toString(st2),toString(e2),sep=":"))
   #+  geom_smooth(method='lm',formula=y~x)
 
-  return(list(dist_plot, data.frame(dist1,dist2)))
+  return(list(dist_plot, data.frame(dist1,dist2), as.matrix(dna_sl_dist1), as.matrix(dna_sl_dist2)))
 
 }
 
@@ -85,14 +85,19 @@ plot_dist_test = function(dna_object, st1,e1,st2,e2){
 # Prints strings "name1\tname2\tdistance_in_region1\tdistance_in_region2"
 find_recomb_names <- function(distM1, val11, val12, distM2, val21, val22){
 
+  
   #positions of matrix for region 1 with values between val11 and val12
+
   b1 = find_dist_slice(distM1,val11, val12)
   #positions of matrix for region 2 with values between val21 and val22
+  print(val12, val22)
   b2 = find_dist_slice(distM2,val21, val22)
+  
   #intersection of b1 and b2
   b= intersect(b1,b2)
-  len_b = length(distM1[1,])
-
+  #len_b = length(distM1[1,])
+  len_b = nrow(as.matrix(distM1))
+  #print(len_b)
   #returns positions of rows in matrix
   r = sapply(b,function(x){if(x%%len_b==0){return(len_b)} else{return(x%%len_b)}})
   #returns positions of columns in matrix
@@ -115,11 +120,11 @@ find_recomb_names <- function(distM1, val11, val12, distM2, val21, val22){
   sorted = data.frame(unique(t(apply(df,1,sort_str))),stringsAsFactors = FALSE)
   colnames(sorted) = c(1,2)
   #  values in matrices
-  x = apply(sorted, 1, function(x){distM1[which(rownames(distM1) == x[1]),which(colnames(distM1) == x[2])]})
-  y = apply(sorted, 1, function(x){distM2[which(rownames(distM1) == x[1]),which(colnames(distM1) == x[2])]})
+  x = round(apply(sorted, 1, function(x){distM1[which(rownames(distM1) == x[1]),which(colnames(distM1) == x[2])]}), 2)
+  y = round(apply(sorted, 1, function(x){distM2[which(rownames(distM1) == x[1]),which(colnames(distM1) == x[2])]}), 2)
   sorted = cbind(sorted,x,y)
-
-
+  #print(typeof(sorted))
+  #print(sorted)
   return(sorted)
 
 }
@@ -127,6 +132,8 @@ find_recomb_names <- function(distM1, val11, val12, distM2, val21, val22){
 #returns positions in matrix which values are between val1 and val2
 find_dist_slice<-function(distM, val1, val2){
   b = which((distM>=val1)&(distM<=val2))
+  #print(val1, val2)
+  #print(distM)
   #print(which((distM>val1)&(distM<val2),arr.ind=T))
   return(b)
 }

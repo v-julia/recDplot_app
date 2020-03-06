@@ -1,6 +1,5 @@
 library(shiny)
-library(shinyHeatmaply)
-
+library(DT)
 source("scripts/rec_plots.R")
 
 
@@ -74,17 +73,20 @@ ui <- navbarPage(
                     mainPanel(
                       fluidRow(
                         splitLayout(
-                          cellWidths = c("50%", "50%"), 
+                          cellWidths = 500, 
                           tagList(h4("Control distance plot"), plotOutput("control")
                           ),
-                          tagList(h4("Distance plot"), plotOutput("dist_plot", brush = brushOpts(
-                                                                  id = "plot1_brush")
+                          tagList(h4("Distance plot"), plotOutput("dist_plot",
+                                                                  brush = brushOpts(id = "plot1_brush"),
+                                                                  click = clickOpts(id = "plot1_click")
                                                                   )
                           )
                         )
                     ),
                     fluidRow(
-                      textOutput("brush_info")
+                      #verbatimTextOutput("mm"),
+                      #DT::dataTableOutput("min_max"),
+                      DT::dataTableOutput("brush_info")
                     )
                   )
          )
@@ -176,18 +178,25 @@ server <- function(input, output) {
       
       observeEvent(input$plot1_brush, {
         brushed_points <- brushedPoints(df, input$plot1_brush)
-        min_1 = min(brushed_points[1,])
-        max_1 = max(brushed_points[1,])
+        min_1 = input$plot1_brush$xmin
+        max_1 = input$plot1_brush$xmax
         
-        min_2 = min(brushed_points[2,])
-        max_2 = max(brushed_points[2,])
+        min_2 = input$plot1_brush$ymin
+        max_2 = input$plot1_brush$ymax
         
-        output$brush_info <- renderPrint({
+        #output$mm <- renderPrint(min_1)
+        
+        #output$mm <- renderText(paste(toString(min(brushed_points[2,])), toString(max(brushed_points[2,])), sep=","))
+        
+        output$min_max <- DT::renderDataTable(brushed_points)
+        
+        output$brush_info <- DT::renderDataTable({
           #brushedPoints(df, input$plot1_brush)
-          colnames(df)
+          #typeof(l[[3]])
+
           #brushed_points[[2]]
           #c(min_1, max_1, min_2, max_2)
-          #find_recomb_names(df[1], min_1, max_1, df[2], min_2, max_2)
+          find_recomb_names(l[[3]], min_1, max_1, l[[4]], min_2, max_2)
           
         })
         
