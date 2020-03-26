@@ -50,6 +50,7 @@ plot_control = function(dna_object){
 
 plot_dist_test = function(dna_object, st1,e1,st2,e2){
 
+  print(paste(st1,e1,st2,e2))
   # subalignments for st1-e1 and st2-e2 regions
   dna_sl1=dna_object[1:length(dna_object[,1]), seq(from = st1, to = e1, by=1)]
   dna_sl2=dna_object[1:length(dna_object[,1]), seq(from = st2, to = e2, by=1)]
@@ -87,7 +88,7 @@ find_recomb_names <- function(distM1, val11, val12, distM2, val21, val22){
 
   
   #positions of matrix for region 1 with values between val11 and val12
-
+  #print(val11, val12, val21, val22)
   b1 = find_dist_slice(distM1,val11, val12)
   #positions of matrix for region 2 with values between val21 and val22
   print(val12, val22)
@@ -264,14 +265,15 @@ plot_rmse = function(dna_object, step,window, method, modification=NA){
   n = nrow(df_intervals)
   print(length(dist_matrices))
   for (i in 1:n){
-    for (j in 1:(n - i + 1)){
-    #for (j in 1:(n)){
+    #for (j in 1:(n - i + 1)){
+    for (j in (i):(n)){
       #print(paste(toString(i), toString(j), sep=","))
       #fits pairwise distance comparison plots linear model, calculates rmse
       rmse_i_j = (rmse(lm(dist_matrices[[j]]~dist_matrices[[i]])) + rmse(lm(dist_matrices[[i]]~dist_matrices[[j]]))) /2.0
       #rmse_i_j = rmse(lm(dist_matrices[[j]]~dist_matrices[[i]]))
       rmse_df[i,j] = rmse_i_j
-      rmse_df[n-j+1,n-i+1] = rmse_i_j
+      rmse_df[j,i] = rmse_i_j
+      #rmse_df[n-j+1,n-i+1] = rmse_i_j
     }
   }
   #print(rmse_df)

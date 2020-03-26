@@ -2,6 +2,7 @@ library(shiny)
 library(DT)
 source("scripts/rec_plots.R")
 
+options(shiny.maxRequestSize = 40*1024^2)
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(
@@ -202,14 +203,16 @@ create_rmse = function(dna_object, step,window, method, modification=NA, updateP
   n = nrow(df_intervals)
   print(length(dist_matrices))
   for (i in 1:n){
-    for (j in 1:(n - i + 1)){
+    for (j in (i):(n)){
+    #for (j in 1:(n - i + 1)){
       #for (j in 1:(n)){
       #print(paste(toString(i), toString(j), sep=","))
       #fits pairwise distance comparison plots linear model, calculates rmse
       rmse_i_j = (rmse(lm(dist_matrices[[j]]~dist_matrices[[i]])) + rmse(lm(dist_matrices[[i]]~dist_matrices[[j]]))) /2.0
       #rmse_i_j = rmse(lm(dist_matrices[[j]]~dist_matrices[[i]]))
       rmse_df[i,j] = rmse_i_j
-      rmse_df[n-j+1,n-i+1] = rmse_i_j
+      rmse_df[j,i] = rmse_i_j
+      #rmse_df[n-j+1,n-i+1] = rmse_i_j
       
       if (is.function(updateProgress)){
         incProgress(0.5*(2/(n*(n-1))), detail = "Calculating rmse for windows pairs")
@@ -361,6 +364,7 @@ server <- function(input, output) {
           #brushed_points[[2]]
           #c(min_1, max_1, min_2, max_2)
           find_recomb_names(l[[3]], min_1, max_1, l[[4]], min_2, max_2)
+          #find_recomb_names(l[[4]], min_2, max_2, l[[3]], min_1, max_1)
           
         })
         
