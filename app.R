@@ -14,6 +14,13 @@ ui <- navbarPage(
                       fileInput(
                         "file_alignment", "Upload alignment in fasta-format", accept = c(".fasta", ".fas")
                       ),
+                      radioButtons("default_alignment", "Or reproduce the results for Coronavirus genera",
+                                   choices = c("Alphacoronavirus" = "alphac",
+                                               "Betacoronavirus" = "betac",
+                                               "Gammacoronavirus" = "gammac",
+                                               "Deltacoronavirus" = "deltac"),
+                                   selected = "alphac"),
+                      
                       numericInput(
                         "window", 
                         "Size of sliding window", 
@@ -234,8 +241,23 @@ create_rmse = function(dna_object, step,window, method, modification=NA, updateP
 server <- function(input, output) {
 
   observeEvent(input$goButton, {
-    
-    aln <- read.dna(as.character(input$file_alignment$datapath), format="fasta", as.character=TRUE)
+
+
+    if (! is.null(input$file_alignment$datapath)){
+      file = input$file_alignment$datapath
+    } else if (input$default_alignment == "alphac"){
+      
+      file = 'data/alpha.fasta'
+    } else if (input$default_alignment == "betac") {
+      file = 'data/beta.fasta'
+    } else if (input$default_alignment == "gammac") {
+      file = 'data/gamma.fasta'
+    } else if (input$default_alignment == "deltac") {
+      file = 'data/delta.fasta'
+    }
+
+    print(file)
+    aln <- read.dna(as.character(file), format="fasta", as.character=TRUE)
     aln[aln=='-'] <- NA
     output$rmse_matrix_plot <- renderPlot({
       
@@ -296,14 +318,26 @@ server <- function(input, output) {
   observeEvent(
     input$goButton2, {
 
+      if (! is.null(input$file_alignment$datapath)){
+        file = input$file_alignment$datapath
+      } else if (input$default_alignment == "alphac"){
+        file = 'data/alpha.fasta'
+      } else if (input$default_alignment == "betac") {
+        file = 'data/beta.fasta'
+      } else if (input$default_alignment == "gammac") {
+        file = 'data/gamma.fasta'
+      } else if (input$default_alignment == "deltac") {
+        file = 'data/delta.fasta'
+      }
       
+      print(file)
       withProgress(message = 'Creating distance plots', value = 0, {
       #progress1 <- shiny::Progress$new()
       
       
       #progress1$set(message = "Making control distance plot", value = 0)
       
-      aln = read.dna(as.character(input$file_alignment$datapath), format="fasta", as.character=TRUE)
+      aln = read.dna(as.character(file), format="fasta", as.character=TRUE)
       aln[aln=='-'] <- NA
       
       aln_control = cbind(aln[,input$start1:input$end1], aln[,input$start2:input$end2])
