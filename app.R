@@ -305,6 +305,8 @@ server <- function(input, output) {
       
       aln = read.dna(as.character(input$file_alignment$datapath), format="fasta", as.character=TRUE)
       aln[aln=='-'] <- NA
+      
+      aln_control = cbind(aln[,input$start1:input$end1], aln[,input$start2:input$end2])
       output$control <- renderPlot({
                                   # Create a Progress object
                                   #progress1 <- shiny::Progress$new()
@@ -313,7 +315,7 @@ server <- function(input, output) {
                                   #on.exit(progress1$close())
                                   #progress1$set(message = "Making control distance plot", value = 0)
                                   
-                                  plot_control(aln)
+                                  plot_control(aln_control)
                                   }
                                   
                                   
