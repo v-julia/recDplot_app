@@ -163,13 +163,19 @@ ui <- navbarPage(
                    mainPanel(
                      width = 6,
                      fluidRow(
+                       
+                       splitLayout(
+                         cellWidths = 450, 
+                         tagList(h4("Control plot"), plotOutput("fig3_control",
+                         )
+                         ),
 
                          tagList(h4("Distance plot"), plotOutput("fig3_plot",
                                                                  brush = brushOpts(id = "fig3_brush"),
                                                                  click = clickOpts(id = "fig3_click")
                          )
                          )
-                       
+                       )
                      ),
                      fluidRow(
                        #verbatimTextOutput("mm"),
@@ -263,12 +269,18 @@ ui <- navbarPage(
              mainPanel(
                width = 6,
                fluidRow(
-                 
-                 tagList(h4("Distance plot"), plotOutput("fig4_plot",
-                                                         brush = brushOpts(id = "fig4_brush"),
-                                                         click = clickOpts(id = "fig4_click")
-                 )
-                 )
+                 splitLayout(
+                     #cellWidths = 450, 
+                     tagList(h4("Control plot"), plotOutput("fig4_control",
+                     )
+                     ),
+                     
+                     tagList(h4("Distance plot"), plotOutput("fig4_plot",
+                                                             brush = brushOpts(id = "fig4_brush"),
+                                                             click = clickOpts(id = "fig4_click")
+                     )
+                     )
+                 )  
                  
                ),
                fluidRow(
@@ -600,6 +612,7 @@ server <- function(input, output) {
 
   
   observeEvent(input$js.button_clicked, {
+    
     uid = strsplit(input$js.button_clicked, "_")
     #print(uid)
     button = uid[[1]][1]
@@ -615,7 +628,7 @@ server <- function(input, output) {
         min1 = 1
         max1 = 11242
         min2 = 11243
-        max2 =19255
+        max2 = 19255
       }
       else if (region == "1abs"){
         f = 3
@@ -625,13 +638,6 @@ server <- function(input, output) {
         max2 = 22710
       }
       else if (region == "ss"){
-        f = 3
-        min1 = 1
-        max1 = 19255
-        min2 = 19256
-        max2 = 22710
-      }
-      else if (region == "1abs"){
         f = 3
         min1 = 19255
         max1 = 20871
@@ -647,23 +653,23 @@ server <- function(input, output) {
       }
       else if (region == "ntd"){
         f = 4
-        min1 = 1
-        max1 = 19255
-        min2 = 19256
-        max2 = 22710
+        min1 = 19612
+        max1 = 19901
+        min2 = 19902
+        max2 = 20190
       }
       else if (region == "ctd"){
         f = 4
-        min1 = 1
-        max1 = 19255
-        min2 = 19256
-        max2 = 22710
+        min1 = 20272
+        max1 = 20426
+        min2 = 20427
+        max2 = 20580
       }
       else if (region == "ns2"){
         f = 4
-        min1 = 1
-        max1 = 19255
-        min2 = 19256
+        min1 = 19612
+        max1 = 20190
+        min2 = 20872
         max2 = 22710
       }
       else if (region == "cs2"){
@@ -887,7 +893,7 @@ server <- function(input, output) {
     if (f==3){
       l_fig = plot_dist_test(aln_fig, min1,max1,min2,max2)
       df = l_fig[[2]]
-      output$fig3_plot <- renderPlot(l_fig[[1]], height = 400, width = 600)
+      output$fig3_plot <- renderPlot(l_fig[[1]])
       observeEvent(input$fig3_brush, {
         brushed_points3 <- brushedPoints(df, input$fig3_brush)
         min_1 = input$fig3_brush$xmin
@@ -901,12 +907,20 @@ server <- function(input, output) {
           find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
         })
       })
+      aln_control =  cbind(aln_fig[,min1:max1], aln_fig[,min2:max2])
+      output$fig3_control <- renderPlot({
+        plot_control(aln_control)
+      }
+      
+      
+      )
+      
       
     }
     if (f==4){
       l_fig = plot_dist_test(aln_fig, min1,max1,min2,max2)
       df = l_fig[[2]]
-      output$fig4_plot <- renderPlot(l_fig[[1]], height = 400, width = 600)
+      output$fig4_plot <- renderPlot(l_fig[[1]])
       observeEvent(input$fig4_brush, {
         brushed_points4 <- brushedPoints(df, input$fig4_brush)
         min_1 = input$fig4_brush$xmin
@@ -920,168 +934,15 @@ server <- function(input, output) {
           find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
         })
       })
+      aln_control =  cbind(aln_fig[,min1:max1], aln_fig[,min2:max2])
+      output$fig4_control <- renderPlot({
+        plot_control(aln_control)
+      })
       
     }
   
   }
   )
-  
-  
-  
-  
-#  observe(
-#  #eventReactive(c(A1ab$A1ab, A1abs$A1abs, Ass$Ass, Anc$Anc, Antd$Antd, Actd$Actd, Ans2$Ans2, Acs2$Acs2, As2$As2), {
-#    {
-#    print("variable cchanged")
-#    print(A1ab)
-#    aln_fig = read.dna(as.character("data/alpha.fasta"), format="fasta", as.character=TRUE)
-#    aln_fig[aln_fig=='-'] <- NA
-#    
-    #if (A1ab$A1ab) {
-    #  min1=1
-    #  max1=11242
-    #  min2=11243
-    #  max2=19225
-    #}
-    #
-    #else if (A1abs$A1abs){ 
-    #    print("here i am")
-    #    min1=1
-    #    max1=19225
-    #    min2=19226
-    #    max2=22710
-    #}
-    #else if (Ass$Ass){ 
-    #  min1=19256
-    #  max1=20871
-    #  min2=20872
-    #  max2=20710
-    #}
-    #else if (Anc$Anc){ 
-    #  min1=19612
-    #  max1=20190
-    #  min2=20272
-    #  max2=20580
-    #}
-    #else if (Antd$Antd){ 
-    #  min1=1
-    #  max1=11242
-    #  min2=11243
-    #  max2=19225
-    #}
-    #else if (Actd$Actd){ 
-    #  min1=1
-    #  max1=11242
-    #  min2=11243
-    #  max2=19225
-    #}
-    #else if (Ans2$Ans2){ 
-    #  min1=19612
-    #  max1=20190
-    #  min2=20872
-    #  max2=22710
-    #}
-    #else if (Acs2$Acs2){ 
-    #  min1=20272
-    #  max1=20580
-    #  min2=20872
-    #  max2=22710
-    #} 
-    #else if (As2$As2){ 
-    #  min1=20872
-    #  max1=21200
-    #  min2=21200
-    #  max2=22710
-    #} 
-  
-    
-#  print(min1, max1)
-#  l_fig = plot_dist_test(aln, min1,max1,min2,max2)
-#  output$fig3_plot <- renderPlot(l_fig[[1]])
-#  
-#  df = l_fig[[2]]
-#  
-#  observeEvent(input$fig3_brush, {
-#    brushed_points3 <- brushedPoints(df, input$fig3_brush)
-#    min_1 = input$fig3_brush$xmin
-#    max_1 = input$fig3_brush$xmax
-#    
-#    min_2 = input$fig3_brush$ymin
-#    max_2 = input$fig3_brush$ymax
-#    
-#    #output$mm <- renderPrint(min_1)
-#    
-#    #output$mm <- renderText(paste(toString(min(brushed_points[2,])), toString(max(brushed_points[2,])), sep=","))
-#    
-#    output$min_max <- DT::renderDataTable(brushed_points3)
-#    
-#    output$fig3_brush_info <- DT::renderDataTable({
-#      #brushedPoints(df, input$plot1_brush)
-#      #typeof(l[[3]])
-#      
-#      #brushed_points[[2]]
-#      #c(min_1, max_1, min_2, max_2)
-#      find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
-#      #find_recomb_names(l[[4]], min_2, max_2, l[[3]], min_1, max_1)
-#      
-#    })
-#  }
-#  )
-#
-#  })
-  
-  
-  #observeEvent(c(input$A.1ab.button, input$A.1abs.button, input$A.ss.button), {
-  #  aln_fig = read.dna(as.character("data/alpha.fasta"), format="fasta", as.character=TRUE)
-  #  aln_fig[aln_fig=='-'] <- NA
-  #  
-  #  observeEvent(input$A.1ab.button, {min1=1
-  #                                    max1=11242
-  #                                    min2=11243
-  #                                    max2=19255})
-  #  observeEvent(input$A.1abs.button, {min1=1
-  #                                    max1=19255
-  #                                    min2=19256
-  #                                    max2=22710})
-  #  observeEvent(input$A.ss.button,  {min1=19256
-  #                                    max1=20871
-  #                                    min2=20872
-  #                                    max2=22710})
-#
-  #  l_fig = plot_dist_test(aln_fig, min1,max1,min2,max2)
-#
-  #  
-  #  output$fig3_plot <- renderPlot(l_fig[[1]])
-  #  df = l_fig[[2]]
-#
-  #  observeEvent(input$fig3_brush, {
-  #    brushed_points3 <- brushedPoints(df, input$fig3_brush)
-  #    min_1 = input$fig3_brush$xmin
-  #    max_1 = input$fig3_brush$xmax
-  #    
-  #    min_2 = input$fig3_brush$ymin
-  #    max_2 = input$fig3_brush$ymax
-  #    
-  #    #output$mm <- renderPrint(min_1)
-  #    
-  #    #output$mm <- renderText(paste(toString(min(brushed_points[2,])), toString(max(brushed_points[2,])), sep=","))
-  #    
-  #    output$min_max <- DT::renderDataTable(brushed_points3)
-  #    
-  #    output$fig3_brush_info <- DT::renderDataTable({
-  #      #brushedPoints(df, input$plot1_brush)
-  #      #typeof(l[[3]])
-  #      
-  #      #brushed_points[[2]]
-  #      #c(min_1, max_1, min_2, max_2)
-  #      find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
-  #      #find_recomb_names(l[[4]], min_2, max_2, l[[3]], min_1, max_1)
-  #      
-  #    })
-  #    
-  #  })
-  #})
-  
   
 }
 
