@@ -1,18 +1,28 @@
 library(shiny)
 library(DT)
 library(shinyjs)
+library(shinycssloaders)
+library(shinythemes)
 source("scripts/rec_plots.R")
 
 options(shiny.maxRequestSize = 40*1024^2)
 
 
+button_color_css <- "
+#DivCompClear, #FinderClear, #EnterTimes{
+/* Change the background color of the update button
+to blue. */
+background: DodgerBlue;
+/* Change the text size to 15 pixels. */
+font-size: 15px;
+}"
 
 
-
-# Define UI for application that draws a histogram
+# Define UI for application
 ui <- navbarPage(
         "Exploring recombination in genetic sequences using distance plots",
-         tabPanel("RMSE matrix plot",
+         theme = "styles.css",
+         tabPanel("RMSE matrix plot", tags$style(button_color_css),
                   sidebarLayout(
                     sidebarPanel(
                       
@@ -48,7 +58,20 @@ ui <- navbarPage(
          tabPanel("Distance plot",
                   sidebarLayout(
                     sidebarPanel(
+                      h4("Upload alignment in fasta-format"),
+                      fileInput(
+                        "file_alignment2", "", accept = c(".fasta", ".fas")
+                      ),
+                      h4("Or reproduce the results for Coronavirus genera"),
+                      radioButtons("default_alignment2", "",
+                                   choices = c("Alphacoronavirus" = "alphac",
+                                               "Betacoronavirus" = "betac",
+                                               "Gammacoronavirus" = "gammac",
+                                               "Deltacoronavirus" = "deltac"),
+                                   selected = "alphac"),
+                      
                       h4("Positions of fragment 1"),
+                      
                       fluidRow(
                         column(5,
                                numericInput(
@@ -119,42 +142,43 @@ ui <- navbarPage(
                              });"))),
                  sidebarLayout(
                    sidebarPanel(
-                     h4("Figure 3. Correspondence of pairwise nucleotide distances (PDC plots) between ORF1a and ORF1b (a), ORF1ab and spike (b), S1 and S2 regions of spike (c)."),
+                     h4("Click the figures below to reproduce the plots. Select the dots on the distance plot to show the virus pairs that correspond to them."),
+                     h5("Figure 3. Correspondence of pairwise nucleotide distances (PDC plots) between ORF1a and ORF1b (a), ORF1ab and spike (b), S1 and S2 regions of spike (c)."),
                      fluidRow(
                        h5("a"),
-                       actionButton(inputId = "A-1ab-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('AlphaORF1avsb.png');  background-size: cover; background-position: center;"),
-                       actionButton(inputId = "B-1ab-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('betaORF1avsb.png');  background-size: cover; background-position: center;"),
-                       actionButton(inputId = "G-1ab-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gammaORF1avsb.png');  background-size: cover; background-position: center;"),
-                       actionButton(inputId = "D-1ab-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('deltaORF1avsb.png');  background-size: cover; background-position: center;")
+                       actionButton(inputId = "A-1ab-button", label = NULL, class="fig_button", style = "width: 120px; height: 90px;
+                            background: url('img/AlphaORF1avsb.png');  background-size: cover; background-position: center;"),
+                       actionButton(inputId = "B-1ab-button", label = NULL, class="fig_button", style = "width: 120px; height: 90px;
+                            background: url('img/betaORF1avsb.png');  background-size: cover; background-position: center;"),
+                       actionButton(inputId = "G-1ab-button", label = NULL, class="fig_button", style = "width: 120px; height: 90px;
+                            background: url('img/gammaORF1avsb.png');  background-size: cover; background-position: center;"),
+                       actionButton(inputId = "D-1ab-button", label = NULL, class="fig_button", style = "width: 120px; height: 90px;
+                            background: url('img/deltaORF1avsb.png');  background-size: cover; background-position: center;")
                        
                        ),
                      fluidRow(
                        h5("b"),
                        actionButton(inputId = "A-1abs-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_ORF1abvsS.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_ORF1abvsS.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "B-1abs-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_ORF1abvsS.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_ORF1abvsS.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "G-1abs-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_ORF1abvsS.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_ORF1abvsS.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "D-1abs-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_ORF1abvsS.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_ORF1abvsS.png');  background-size: cover; background-position: center;")
                        
                      ),
                      
                      fluidRow(
                        h5("c"),
                        actionButton(inputId = "A-ss-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('AlphaS1vsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/AlphaS1vsS2.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "B-ss-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('betaS1vsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/betaS1vsS2.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "G-ss-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gammaS1vsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gammaS1vsS2.png');  background-size: cover; background-position: center;"),
                        actionButton(inputId = "D-ss-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('deltaS1vsS2.png');  background-size: cover; background-position: center;")
+                            background: url('img/deltaS1vsS2.png');  background-size: cover; background-position: center;")
                        
                      ),
 
@@ -191,78 +215,78 @@ ui <- navbarPage(
            sidebarLayout(
 
              sidebarPanel(
-               h4("Figure 4. Correspondence of pairwise nucleotide distances in different regions of spike protein: S1-NTD and S1-CTD domains (a), two halves of  S1-NTD domain (b),two halves of  S1-CTD domain (c), S1-NTD domain and S2 region (d), S1-CTD and S2 region (e), two halves of S2 region (f)."),
+               h5("Figure 4. Correspondence of pairwise nucleotide distances in different regions of spike protein: S1-NTD and S1-CTD domains (a), two halves of  S1-NTD domain (b),two halves of  S1-CTD domain (c), S1-NTD domain and S2 region (d), S1-CTD and S2 region (e), two halves of S2 region (f)."),
                fluidRow(
                  h5("a"),
                  actionButton(inputId = "A-nc-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_NTDvsCTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_NTDvsCTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-nc-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_NTDvsCTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_NTDvsCTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-nc-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_NTDvsCTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_NTDvsCTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-nc-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_NTDvsCTD.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_NTDvsCTD.png');  background-size: cover; background-position: center;")
                  
                ),
                fluidRow(
                  h5("b"),
                  actionButton(inputId = "A-ntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_NTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_NTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-ntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_NTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_NTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-ntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_NTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_NTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-ntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_NTD.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_NTD.png');  background-size: cover; background-position: center;")
                  
                ),
                
                fluidRow(
                  h5("c"),
                  actionButton(inputId = "A-ctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_CTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_CTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-ctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_CTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_CTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-ctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_CTD.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_CTD.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-ctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_CTD.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_CTD.png');  background-size: cover; background-position: center;")
                  
                ),
                fluidRow(
                  h5("d"),
                  actionButton(inputId = "A-ns2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_NTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_NTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-ns2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_NTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_NTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-ns2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_NTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_NTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-ns2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_NTDvsS2.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_NTDvsS2.png');  background-size: cover; background-position: center;")
                  
                ),
                fluidRow(
                  h5("e"),
                  actionButton(inputId = "A-cs2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_CTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_CTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-cs2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_CTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_CTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-cs2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_CTDvsS2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_CTDvsS2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-cs2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_CTDvsS2.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_CTDvsS2.png');  background-size: cover; background-position: center;")
                  
                ),
                fluidRow(
                  h5("f"),
                  actionButton(inputId = "A-s2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('Alpha_S2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/Alpha_S2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "B-s2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('beta_S2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/beta_S2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "G-s2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('gamma_S2.png');  background-size: cover; background-position: center;"),
+                            background: url('img/gamma_S2.png');  background-size: cover; background-position: center;"),
                  actionButton(inputId = "D-s2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
-                            background: url('delta_S2.png');  background-size: cover; background-position: center;")
+                            background: url('img/delta_S2.png');  background-size: cover; background-position: center;")
                  
                ),
              ),
@@ -291,8 +315,90 @@ ui <- navbarPage(
                  
                ),
                
-             )
+             ),
+         sidebarLayout(
+           sidebarPanel(
+             h5("Figure S5. Correspondence of pairwise nucleotide distances (PDC plots) between ORF1ab and domains of spike protein: S1 (a), S2 (b), S1-NTD (c), S1-CTD (d)."),
+             fluidRow(
+               h5("a"),
+               actionButton(inputId = "A-1abS1-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/AlphaORF1abvsS1.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "B-1abS1-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/BetaORF1abvsS1.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "G-1abS1-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/GammaORF1abvsS1.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "D-1abS1-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/delta_ORF1abvsS1.png');  background-size: cover; background-position: center;")
+               
+             ),
+             fluidRow(
+               h5("b"),
+               actionButton(inputId = "A-1abS2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/AlphaORF1abvsS2.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "B-1abS2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/BetaORF1abvsS2.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "G-1abS2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/GammaORF1abvsS2.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "D-1abS2-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/delta_ORF1abvsS2.png');  background-size: cover; background-position: center;")
+               
+             ),
              
+             fluidRow(
+               h5("c"),
+               actionButton(inputId = "A-1abntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/AlphaORF1abvsNTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "B-1abntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/BetaORF1abvsNTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "G-1abntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/GammaORF1abvsNTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "D-1abntd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/delta_ORF1abvsNTD.png');  background-size: cover; background-position: center;")
+               
+             ),
+             fluidRow(
+               h5("c"),
+               actionButton(inputId = "A-1abctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/AlphaORF1abvsCTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "B-1abctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/BetaORF1abvsCTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "G-1abctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/GammaORF1abvsCTD.png');  background-size: cover; background-position: center;"),
+               actionButton(inputId = "D-1abctd-button", label = NULL, class="fig_button", style = "width: 150px; height: 120px;
+                          background: url('img/delta_ORF1abvsCTD.png');  background-size: cover; background-position: center;")
+               
+             ),
+             
+             
+           ),
+           mainPanel(
+             width = 6,
+             fluidRow(
+               
+               splitLayout(
+                 cellWidths = 450, 
+                 tagList(h4("Control plot"), plotOutput("fig5_control",
+                 )
+                 ),
+                 
+                 tagList(h4("Distance plot"), plotOutput("fig5_plot",
+                                                         brush = brushOpts(id = "fig5_brush"),
+                                                         click = clickOpts(id = "fig5_click")
+                 )
+                 )
+               )
+             ),
+             fluidRow(
+               #verbatimTextOutput("mm"),
+               #DT::dataTableOutput("min_max"),
+               DT::dataTableOutput("fig5_brush_info")
+             )
+           )
+           
+           
+           
+         )
+           
              
            
                  
@@ -303,47 +409,8 @@ ui <- navbarPage(
                      p("The description of this app")
                    )
         )
+
 )
-
-
-   
-
-
-   
-   
-   #sidebarLayout(
-  #   sidebarPanel(
-  #     fileInput(
-  #       "file_alignment", "Upload alignment in fasta-format", accept = c(".fasta")
-  #     ),
-  #     numericInput(
-  #       "window", 
-  #       "Size of sliding window", 
-  #       min = 50, max = 10000, value = 200
-  #     ),
-  #     numericInput(
-  #       "step", 
-  #       "Size of step", 
-  #       min = 10, max = 10000, value = 50
-  #     ),
-  #     actionButton("goButton", "Run")
-  #
-  #     
-  #   ),
-  #   
-  #   
-  #   mainPanel(
-  #     p("Short description of this app"),
-  #     textOutput("selected_var"),
-  #     plotOutput("rmse_matrix_plot", click = "plot_click"),
-  #     verbatimTextOutput("info")
-  #     
-  #     
-  #     )
-      
-     
-     
-  # )
 
    
 # plots heatmap with RMSE in pairwise distance comparison plot for each pair of genomic regions
@@ -516,15 +583,15 @@ server <- function(input, output) {
   observeEvent(
     input$goButton2, {
 
-      if (! is.null(input$file_alignment$datapath)){
-        file = input$file_alignment$datapath
-      } else if (input$default_alignment == "alphac"){
+      if (! is.null(input$file_alignment2$datapath)){
+        file = input$file_alignment2$datapath
+      } else if (input$default_alignment2 == "alphac"){
         file = 'data/alpha.fasta'
-      } else if (input$default_alignment == "betac") {
+      } else if (input$default_alignment2 == "betac") {
         file = 'data/beta.fasta'
-      } else if (input$default_alignment == "gammac") {
+      } else if (input$default_alignment2 == "gammac") {
         file = 'data/gamma.fasta'
-      } else if (input$default_alignment == "deltac") {
+      } else if (input$default_alignment2 == "deltac") {
         file = 'data/delta.fasta'
       }
       
@@ -600,7 +667,7 @@ server <- function(input, output) {
           find_recomb_names(l[[3]], min_1, max_1, l[[4]], min_2, max_2)
           #find_recomb_names(l[[4]], min_2, max_2, l[[3]], min_1, max_1)
           
-        })
+        }, options = list(pageLength = 20))
         
       })
       
@@ -639,7 +706,7 @@ server <- function(input, output) {
       }
       else if (region == "ss"){
         f = 3
-        min1 = 19255
+        min1 = 19256
         max1 = 20871
         min2 = 20872
         max2 = 22710
@@ -686,6 +753,36 @@ server <- function(input, output) {
         min2 = 21800
         max2 = 22710
       }
+      else if (region == "1abS1"){
+        f = 5
+        min1 = 1
+        max1 = 19255
+        min2 = 19256
+        max2 = 20871
+      }
+      else if (region == "1abS2"){
+        f = 5
+        min1 = 1
+        max1 = 19255
+        min2 = 20872
+        max2 = 22710
+      }
+      else if (region == "1abntd"){
+        f = 5
+        min1 = 1
+        max1 = 19255
+        min2 = 19612
+        max2 = 20190
+      }
+      else if (region == "1abctd"){
+        f = 5
+        min1 = 1
+        max1 = 19255
+        min2 = 20272
+        max2 = 20580
+      }
+      
+      
     }
     else if (genus == "B"){
       aln_fig = read.dna(as.character("data/beta.fasta"), format="fasta", as.character=TRUE)
@@ -751,6 +848,34 @@ server <- function(input, output) {
         max1 = 21900
         min2 = 21901
         max2 = 22743
+      }
+      else if (region == "1abS1"){
+        f = 5
+        min1 = 1
+        max1 = 19398
+        min2 = 19468
+        max2 = 21060
+      }
+      else if (region == "1abS2"){
+        f = 5
+        min1 = 1
+        max1 = 19398
+        min2 = 21061
+        max2 = 22743
+      }
+      else if (region == "1abntd"){
+        f = 5
+        min1 = 1
+        max1 = 19398
+        min2 = 19429
+        max2 = 20124
+      }
+      else if (region == "1abctd"){
+        f = 5
+        min1 = 1
+        max1 = 19398
+        min2 = 20212
+        max2 = 20646
       }
     }
     else if (genus == "G"){
@@ -818,6 +943,34 @@ server <- function(input, output) {
         min2 = 21800
         max2 = 22689
       }
+      else if (region == "1abS1"){
+        f = 5
+        min1 = 1
+        max1 = 19629
+        min2 = 19714
+        max2 = 20862
+      }
+      else if (region == "1abS2"){
+        f = 5
+        min1 = 1
+        max1 = 19629
+        min2 = 20863
+        max2 = 22689
+      }
+      else if (region == "1abntd"){
+        f = 5
+        min1 = 1
+        max1 = 19629
+        min2 = 19684
+        max2 = 20142
+      }
+      else if (region == "1abctd"){
+        f = 5
+        min1 = 1
+        max1 = 19629
+        min2 = 20182
+        max2 = 20553
+      }
     }
     else if (genus == "D"){
       aln_fig = read.dna(as.character("data/delta.fasta"), format="fasta", as.character=TRUE)
@@ -852,9 +1005,9 @@ server <- function(input, output) {
       else if (region == "ntd"){
         f = 4
         min1 = 18697
-        max1 = 19400
-        min2 = 19401
-        max2 = 19791
+        max1 = 19017
+        min2 = 19018
+        max2 = 19338
       }
       else if (region == "ctd"){
         f = 4
@@ -866,7 +1019,7 @@ server <- function(input, output) {
       else if (region == "ns2"){
         f = 4
         min1 = 18697
-        max1 = 19791
+        max1 = 19338
         min2 = 20029
         max2 = 21876
       }
@@ -883,6 +1036,34 @@ server <- function(input, output) {
         max1 = 20900
         min2 = 20901
         max2 = 21876
+      }
+      else if (region == "1abS1"){
+        f = 5
+        min1 = 1
+        max1 = 18531
+        min2 = 18697
+        max2 = 20007
+      }
+      else if (region == "1abS2"){
+        f = 5
+        min1 = 1
+        max1 = 18531
+        min2 = 20029
+        max2 = 21876
+      }
+      else if (region == "1abntd"){
+        f = 5
+        min1 = 1
+        max1 = 18531
+        min2 = 18697
+        max2 = 19338
+      }
+      else if (region == "1abctd"){
+        f = 5
+        min1 = 1
+        max1 = 18531
+        min2 = 19408
+        max2 = 19791
       }
     }
     aln_fig[aln_fig=='-'] <- NA
@@ -919,7 +1100,7 @@ server <- function(input, output) {
           
           output$fig3_brush_info <- DT::renderDataTable({
             find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
-          })
+          }, options = list(pageLength = 20))
         })
         incProgress(0.2, detail = "Creating plots")
       })
@@ -952,12 +1133,43 @@ server <- function(input, output) {
           
           output$fig4_brush_info <- DT::renderDataTable({
             find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
-          })
+          }, options = list(pageLength = 20))
         })
         incProgress(0.2, detail = "Creating plots")
       })
     }
-  
+    if (f==5){
+      withProgress(message = 'Creating distance plots', value = 0, {
+        
+        aln_control =  cbind(aln_fig[,min1:max1], aln_fig[,min2:max2])
+        output$fig5_control <- renderPlot({
+          plot_control(aln_control)
+        })
+        incProgress(0.4, detail = "Control plot finished")
+        Sys.sleep(0.5)
+        
+        l_fig = plot_dist_test(aln_fig, min1,max1,min2,max2)
+        df = l_fig[[2]]
+        incProgress(0.4, detail = "Distance plot finished")
+        Sys.sleep(0.5)
+        
+        output$fig5_plot <- renderPlot(l_fig[[1]])
+        observeEvent(input$fig5_brush, {
+          brushed_points5 <- brushedPoints(df, input$fig5_brush)
+          min_1 = input$fig5_brush$xmin
+          max_1 = input$fig5_brush$xmax
+          
+          min_2 = input$fig5_brush$ymin
+          max_2 = input$fig5_brush$ymax
+          output$min_max <- DT::renderDataTable(brushed_points5)
+          
+          output$fig5_brush_info <- DT::renderDataTable({
+            find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
+          }, options = list(pageLength = 20))
+        })
+        incProgress(0.2, detail = "Creating plots")
+      })
+    }
   }
   )
   
@@ -965,3 +1177,13 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
+#shinyApp(
+#  ui = fluidPage(DT::dataTableOutput('tbl')),
+#  server = function(input, output) {
+#    output$tbl = DT::renderDataTable(
+#      {iris}, options = list(pageLength = 20)
+#    )
+#  }
+#)#
