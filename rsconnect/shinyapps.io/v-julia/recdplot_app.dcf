@@ -5,6 +5,6 @@ account: v-julia
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1887991
-bundleId: 4157527
+bundleId: 4164412
 url: https://v-julia.shinyapps.io/recdplot_app/
-when: 1611926167.36294
+when: 1612127952.43615

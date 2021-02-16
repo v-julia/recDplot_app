@@ -213,39 +213,45 @@ plot_dist = function(dna_object, step, method, fig_dir, name_fig){
   }
 }
 
+
 # plots heatmap with RMSE in pairwise distance comparison plot for each pair of genomic regions
 # dna_object -  list of DNA sequences (class DNAbin)
 # step
 # window - length of genomic regions to compare
 # method - method of calculation distances ("pdist", "JC", "Kimura", "TN")
 # modification - pairwise deletion of positions with gaps or not
+# updateProgress - function 
 
 #returns matrix with rmse values for each pair f=of genomic regions
 
-plot_rmse = function(dna_object, step,window, method, modification=NA){
-
+create_rmse = function(dna_object, step,window, method, modification=NA, updateProgress = NULL){
+  
   length_aln = length(dna_object[1,]) #length of alignment
   num_seq = length(dna_object[,1]) # number of sequences in alignment
-
+  
   starts = seq(from=0, to=length_aln-window, by = step) # start positions of genomic regions
   starts[1]=1
   ends = seq(from=window, to = length_aln, by = step) # end positions of genomic regions
   if (length_aln%%step>step){ends=c(ends,length_aln)}
-
+  
   df_intervals = cbind(starts,ends) #intervals
-
+  
   #names = apply(df_intervals, 1, function(x){paste(toString(x[1]),toString(x[2]),sep="_")})
-
+  
   #dataframe to store RMSE values of each comparison
   rmse_df = data.frame(matrix(ncol=length(starts), nrow = length(starts)))
   colnames(rmse_df)=starts
   rownames(rmse_df)=starts
-
+  
+  
+  
   #list of distance matrices for each pair of genomic regions
+  n = nrow(df_intervals)
+  
   dist_matrices = list()
-  for (i in 1:nrow(df_intervals)){
+  for (i in 1:n){
     slice = dna_object[1:num_seq, seq(from = df_intervals[i,"starts"], to = df_intervals[i,"ends"], by=1)]
-
+    
     #dist_matrices[[i]] = dist.dna(slice,  as.matrix = TRUE,  model = "JC69")
     if (method == "pdist"){
       if (modification=="pairwise"){
@@ -253,20 +259,26 @@ plot_rmse = function(dna_object, step,window, method, modification=NA){
       else {
         dist_matrices[[i]] = dist.gene(slice, method = "percentage",  pairwise.deletion = FALSE)}
     }
-
+    
     else {
       if (method == "JC"){dist_matrices[[i]] = dist.dna(slice,  as.matrix = TRUE,  model = "JC69")}
       if (method == "Kimura"){dist_matrices[[i]] = dist.dna(slice,  as.matrix = TRUE,  model = "K80")}
       if (method == "TN"){dist_matrices[[i]] = dist.dna(slice,  as.matrix = TRUE,  model = "K80")}
       #else{print("Unknown method")}
+      
     }
+    
+    if (is.function(updateProgress)){
+      incProgress(0.5*(1/n), detail = "Calculating genetic distances in windows")
 
+    }
   }
   n = nrow(df_intervals)
   print(length(dist_matrices))
   for (i in 1:n){
-    #for (j in 1:(n - i + 1)){
     for (j in (i):(n)){
+    #for (j in 1:(n - i + 1)){
+      #for (j in 1:(n)){
       #print(paste(toString(i), toString(j), sep=","))
       #fits pairwise distance comparison plots linear model, calculates rmse
       rmse_i_j = (rmse(lm(dist_matrices[[j]]~dist_matrices[[i]])) + rmse(lm(dist_matrices[[i]]~dist_matrices[[j]]))) /2.0
@@ -274,14 +286,19 @@ plot_rmse = function(dna_object, step,window, method, modification=NA){
       rmse_df[i,j] = rmse_i_j
       rmse_df[j,i] = rmse_i_j
       #rmse_df[n-j+1,n-i+1] = rmse_i_j
+      
+      if (is.function(updateProgress)){
+        incProgress(0.5*(2/(n*(n-1))), detail = "Calculating rmse for windows pairs")
+
+      }
+      
     }
   }
   #print(rmse_df)
   #colnames(rmse_df)
   return(rmse_df)
-
+  
 }
-
 
 
 # plots heatmap with regression slope in pairwise distance comparison plot for each pair of genomic regions

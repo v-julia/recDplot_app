@@ -47,6 +47,12 @@
     background-color: #737373;
 }
 
+.navbar-default .navbar-brand:hover {
+    font-size: 30px;
+    color: #7d7da9;
+}
+
+
 /* body */
 
 body {
