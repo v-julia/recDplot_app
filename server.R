@@ -156,7 +156,11 @@ server <- function(input, output) {
           find_recomb_names(l[[3]], min_1, max_1, l[[4]], min_2, max_2)
           #find_recomb_names(l[[4]], min_2, max_2, l[[3]], min_1, max_1)
           
-        }, options = list(pageLength = 20))
+
+          
+        },extensions = 'Buttons',
+        options = list(pageLength = 20, dom = 'Bfrtip', buttons = c('copy', 'csv'))
+        )
         
       })
       
