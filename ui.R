@@ -389,7 +389,12 @@ ui <- navbarPage(
 #------------------ABOUT APP TAB
         tabPanel("About",
                    mainPanel(
-                     p("The description of this app")
+                     p("Please cite:"),
+                     tags$ul(
+                             tags$li("Vakulenko, Y., Andrei Deviatkin, Drexler, J. F. & Lukashev, A. Modular Evolution of Coronavirus Genomes, Viruses, (2021)."), 
+                     ),
+                     p("This research was funded by Russian Foundation for Basic Research, grant number 20-04-60397.")
+                     
                    )
         )
 

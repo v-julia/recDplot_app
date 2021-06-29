@@ -159,7 +159,7 @@ server <- function(input, output) {
 
           
         },extensions = 'Buttons',
-        options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'))
+        options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'), lengthMenu = c(10, 25, 50, 100, 1000, 10000))
         )
         
       })
@@ -594,7 +594,7 @@ server <- function(input, output) {
           output$fig3_brush_info <- DT::renderDataTable({
             find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
           },extensions = 'Buttons',
-          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'))
+          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'), lengthMenu = c(10, 25, 50, 100, 1000, 10000))
           )
         })
         incProgress(0.2, detail = "Creating plots")
@@ -629,7 +629,7 @@ server <- function(input, output) {
           output$fig4_brush_info <- DT::renderDataTable({
             find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
           }, extensions = 'Buttons',
-          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'))
+          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'), lengthMenu = c(10, 25, 50, 100, 1000, 10000))
           )
         })
         incProgress(0.2, detail = "Creating plots")
@@ -663,7 +663,7 @@ server <- function(input, output) {
           output$fig5_brush_info <- DT::renderDataTable({
             find_recomb_names(l_fig[[3]], min_1, max_1, l_fig[[4]], min_2, max_2)
           }, extensions = 'Buttons',
-          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'))
+          options = list(pageLength = 20, dom = 'Blfrtip', buttons = c('copy', 'csv'), lengthMenu = c(10, 25, 50, 100, 1000, 10000))
           )
         })
         incProgress(0.2, detail = "Creating plots")
